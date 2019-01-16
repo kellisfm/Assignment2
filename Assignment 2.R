@@ -9,24 +9,28 @@
 #6 If a column named Nutrients exists,  all strings with their first letter
 
 
-#if dplyr is not already installed, run the following command
+#if dplyr or measurements is not already installed, run the following command(s)
 #install.packages("dplyr")
+#install.packages("measurements")
 
-#This allows the dplyr commands in this document
+#These allow use of the dplyr and measurements commands in this document
 library(dplyr)
+library(measurements)
 
+#import the csv
 Fallo=read.csv("InData.csv")
 
 #the select function keeps only the selected columns, in the order that they are typed
 Fallo=select(Fallo,Total,Taxon,Scenario,Nutrients)
 
+
 #filter allows the removal of all rows that do not fit the criteria
 #in this case, all rows with a total biomass less than 60 are removed
 Fallo=filter(Fallo,Total>=60)
 
-#we can create a new column with the total grams via Fallo$____
-#to convert from mg to gram we devide by 1000
-Fallo$TotalG=Fallo$Total*0.001
+#we can create a new TotalG column with the total grams via Fallo$TotalG
+#to convert from mg to gram we use the conv_unit command found in the measurements package
+Fallo$TotalG=conv_unit(Fallo$Total,"mg","g")
 
 #next we can replace Total with TotalG, by using the select command again
 Fallo=select(Fallo,TotalG,Taxon,Scenario,Nutrients)
@@ -43,6 +47,3 @@ Fallo$TotalG=gsub("\\.",",",(Fallo$TotalG))
 if ("Nutrients" %in% colnames(Fallo)) {
   Fallo$Nutrients=gsub("(\\w)\\w+","\\1",(Fallo$Nutrients))
 }
-  
-     
-head(Fallo)
